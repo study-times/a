@@ -4,9 +4,16 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300&family=Zen+Maru+Gothic:wght@300&display=swap" rel="stylesheet">
     <style>
         body{
             background-color:lightgreen;
+        }
+        #status{
+            font-family: 'Zen Maru Gothic', sans-serif;
         }
         #center{
             width:350px;
@@ -20,6 +27,9 @@
         }
         #center h1{
             font-size: 70px;
+        }
+        #time{
+            font-family: 'Noto Serif JP', serif;
         }
         #tggle{
             height: 25px;
@@ -127,7 +137,6 @@
                 <h1 id="status">休憩中</h1>
                 <h1 id="time">00:00:00</h1>
             </div>
-            <button onclick="start()" id="ssbutton">start</button>
         </div>
         <div id="changebutton" onclick="comparison()">比較</div>
     </div>
@@ -147,6 +156,7 @@
             center.setAttribute('onclick','start()');
             center.style.cursor="pointer";
         }
+
 
         window.addEventListener("orientationchange", function() {
 	//画面の向きを 0,90,180,-90 のいずれかで取得
@@ -177,23 +187,20 @@
         function start(){
         var check = document.getElementById('switch1').checked;
             document.body.style.backgroundColor='#Ffa07a';
-            var ssbutton = document.getElementById('ssbutton');
-            ssbutton.setAttribute('onclick', 'stop()');
-            ssbutton.innerText="stop";
             document.getElementById('status').innerText='学習中';
             document.getElementById('tggle').style.display="none";
             document.getElementById('changebutton').style.display="none";
             if(!check){
                 center.setAttribute('onclick','stop()');
             }
+            if(!checkdate){
+                retimer();
+            }
             saimer();
         }
         function stop(){
         var check = document.getElementById('switch1').checked;
             document.body.style.backgroundColor="lightgreen";
-            var ssbutton = document.getElementById('ssbutton');
-            ssbutton.setAttribute('onclick', 'start()');
-            ssbutton.innerText="start";
             document.getElementById('status').innerText='休憩中';
             document.getElementById('tggle').style.display="block";
             document.getElementById('changebutton').style.display="block";
@@ -221,7 +228,8 @@ function saimer(){
 
 // 時間を表示する関数
 function displayTime() {
-  const currentTime = new Date(Date.now() - startTime + stopTime);
+  var recordTime = localStorage.getItem('time');
+  const currentTime = new Date(Date.now() - startTime + Number(recordTime));
   const h = String(currentTime.getHours()-9).padStart(2, '0');
   const m = String(currentTime.getMinutes()).padStart(2, '0');
   const s = String(currentTime.getSeconds()).padStart(2, '0');
@@ -234,12 +242,28 @@ function displayTime() {
 function stimer(){
   clearTimeout(timeoutID);
   stopTime += (Date.now() - startTime);
+  localStorage.setItem('time',stopTime);
+  localStorage.setItem('recordDate',new Date());
 }
 
 // リセットボタンがクリックされたら時間を0に戻す
 function retimer(){
   time.textContent = '00:00:00';
   stopTime = 0;
+  localStorage.setItem('time',stopTime);
+}
+
+function checkdate(){
+    var recordDate = localStorage.getItem('recordDate');
+    var rec = new Date(recordDate);
+var ago = new Date();
+ago.setHours(ago.getHours() -4);
+if(ago.getDate() == rec.getDate()){
+    return true;
+}else{
+    return false;
+}
+
 }
     </script>
 </body>
