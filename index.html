@@ -162,6 +162,7 @@
     center.setAttribute('onclick','start()');
     center.style.cursor="pointer";
     document.getElementById('tggle').style.display="none";
+            document.getElementById('switch1').checked=false;
     localStorage.setItem('rotate','false');
   }
 
@@ -200,6 +201,7 @@
             if(!check){
                 center.setAttribute('onclick','stop()');
             }
+            
             if(!checkdate){
                 retimer();
             }
