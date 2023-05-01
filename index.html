@@ -157,6 +157,12 @@
             center.style.cursor="pointer";
         }
 
+        if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
+  } else {
+    center.setAttribute('onclick','start()');
+    center.style.cursor="pointer";
+    localStorage.setItem('rotate','false');
+  }
 
         window.addEventListener("orientationchange", function() {
 	//画面の向きを 0,90,180,-90 のいずれかで取得
