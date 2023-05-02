@@ -114,6 +114,7 @@
  transform      : translateX(30px);    /* 丸も右へ移動       */
  background     : #78bd78;             /* カーソルタブの背景 */
 }
+
 </style>
     <title>Gakkan</title>
     <script>
@@ -198,7 +199,7 @@
             document.getElementById('status').innerText='学習中';
             document.getElementById('tggle').style.display="none";
             document.getElementById('changebutton').style.display="none";
-            if(!check){
+            if(!check){	
                 center.setAttribute('onclick','stop()');
             }
             
@@ -211,12 +212,15 @@
         var check = document.getElementById('switch1').checked;
             document.body.style.backgroundColor="lightgreen";
             document.getElementById('status').innerText='休憩中';
-            document.getElementById('tggle').style.display="block";
             document.getElementById('changebutton').style.display="block";
-            stimer();
+            if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
+            document.getElementById('tggle').style.display="block";
+  } else {
+  }
             if(!check){
                 center.setAttribute('onclick','start()');
             }
+            stimer();
         }
 
 
