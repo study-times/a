@@ -203,7 +203,7 @@
                 center.setAttribute('onclick','stop()');
             }
             
-            if(!checkdate){
+            if(!checkdate()){
                 retimer();
             }
             saimer();
@@ -271,9 +271,13 @@ function checkdate(){
     var rec = new Date(recordDate);
 var ago = new Date();
 ago.setHours(ago.getHours() -4);
+console.log("ago="+ago);
+console.log("now="+rec);
 if(ago.getDate() == rec.getDate()){
+    console.log('true');
     return true;
 }else{
+    console.log('false');
     return false;
 }
 
