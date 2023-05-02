@@ -159,6 +159,14 @@
         }
 
         if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
+            window.addEventListener("orientationchange", function() {
+    var orientation = window.orientation;
+    if (orientation === 0) {
+        stop();
+    } else {
+        start();
+  }
+});
   } else {
     center.setAttribute('onclick','start()');
     center.style.cursor="pointer";
@@ -167,18 +175,7 @@
     localStorage.setItem('rotate','false');
   }
 
-        window.addEventListener("orientationchange", function() {
-	//画面の向きを 0,90,180,-90 のいずれかで取得
-    var orientation = window.orientation;
 
-    if (orientation === 0) {
-        /*  縦画面時の処理  */
-        stop();
-    } else {
-        /*  横画面時の処理  */
-        start();
-  }
-});
 
         function routate(){
         var check = document.getElementById('switch1').checked;
@@ -208,6 +205,8 @@
             }
             saimer();
         }
+
+        
         function stop(){
         var check = document.getElementById('switch1').checked;
             document.body.style.backgroundColor="lightgreen";
@@ -227,26 +226,28 @@
         const time = document.getElementById('time');
 //https://tcd-theme.com/2022/06/javascript-stopwatch.html
 // 開始時間
-let startTime;
+let rtime;
 // 停止時間
-let stopTime = 0;
 // タイムアウトID
 let timeoutID;
 
 // スタートボタンがクリックされたら時間を進める
 function saimer(){
   startTime = Date.now();
+  rtime = Number(localStorage.getItem('time'));
   displayTime();
 }
 
 // 時間を表示する関数
 function displayTime() {
-  var recordTime = localStorage.getItem('time');
-  const currentTime = new Date(Date.now() - startTime + Number(recordTime));
-  const h = String(currentTime.getHours()-9).padStart(2, '0');
-  const m = String(currentTime.getMinutes()).padStart(2, '0');
-  const s = String(currentTime.getSeconds()).padStart(2, '0');
-
+  var currentTime = rtime;
+  const hour = Math.floor(currentTime/3600);
+  const min = Math.floor((currentTime-3600*hour)/60);
+  const sec = currentTime-3600*hour-min*60;
+  const h = String(hour).padStart(2, '0');
+  const m = String(min).padStart(2, '0');
+  const s = String(sec).padStart(2, '0');
+  rtime=rtime+1;
   time.textContent = `${h}:${m}:${s}`;
   timeoutID = setTimeout(displayTime, 1000);
 }
@@ -254,8 +255,7 @@ function displayTime() {
 // ストップボタンがクリックされたら時間を止める
 function stimer(){
   clearTimeout(timeoutID);
-  stopTime += (Date.now() - startTime);
-  localStorage.setItem('time',stopTime);
+  localStorage.setItem('time',rtime);
   localStorage.setItem('recordDate',new Date());
 }
 
