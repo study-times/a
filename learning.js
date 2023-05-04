@@ -31,6 +31,14 @@ var firebaseConfig = {
             }else{
         udata=obj.val();
     console.log(udata);
+    var currentTime = udata.time;
+    const hour = Math.floor(currentTime/3600);
+    const min = Math.floor((currentTime-3600*hour)/60);
+    const sec = currentTime-3600*hour-min*60;
+    const h = String(hour).padStart(2, '0');
+    const m = String(min).padStart(2, '0');
+    const s = String(sec).padStart(2, '0');
+    time.textContent = `${h}:${m}:${s}`;
             }
     });
     }, 1000);
