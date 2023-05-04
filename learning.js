@@ -15,7 +15,7 @@ var firebaseConfig = {
     
     setTimeout(() => {
      document.getElementById("runArea").remove();
-     if(!auth.currentUser.uid){
+     if(!auth.currentUser){
         location.href="./index.html";
      }
         db.ref('users/'+auth.currentUser.uid).on('value', function (obj) {
