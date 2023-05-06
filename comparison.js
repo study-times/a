@@ -10,6 +10,7 @@ var firebaseConfig = {
     };
     
     
+    var resettime;
     var data;
     var racelabel=[];
     var racetimes=[];
@@ -34,6 +35,10 @@ var firebaseConfig = {
             location.href="./index.html";
          }
         document.getElementById("runArea").remove();
+        db.ref('users/'+auth.currentUser.uid).on('value', function (uda) {
+            var udata = uda.val();
+            resettime=udata.reset;
+        })
             db.ref('archive').on('value', function (obj) {
                 data = obj.val();
                 console.log(obj.val());
@@ -65,7 +70,9 @@ var firebaseConfig = {
     
     
             function race(data){
-            var today = format(new Date());
+            var ago =  new Date();
+            ago.setHours(ago.getHours() -Number(resettime));
+            var today = format(new Date(ago));
             var todaydata = data[today];
             var keys =Object.keys(todaydata);
             for(i=0;i<keys.length;i++){
@@ -119,10 +126,11 @@ var firebaseConfig = {
     
     
             function yes(data){
-                console.log('a');
             var today = new Date();
-            today.setDate(today.getDate() - 1);
-            var yesterday = format(new Date(today));
+            today.setHours(today.getHours() -Number(resettime));
+            day = new Date(today);
+            day.setDate(day.getDate() - 1);
+            var yesterday = format(new Date(day));
             console.log(yesterday);
             var yesterdaydata = data[yesterday];
             if(!yesterdaydata){
