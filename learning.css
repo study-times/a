@@ -24,7 +24,7 @@ text-align: center;
     height: 25px;
     position: absolute;
     top: 0px;
-    right: 150px;
+    right: 15%;
 }
 #tggle p{
     font-size: small;
@@ -154,4 +154,19 @@ animation     : runOpenAnime 2s linear infinite;
 @keyframes runOpenAnime {
 0% { transform  :translateX(-100%) }
 100% { transform  :translateX(100%)  }
+}
+#back{
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    background-color: aquamarine;
+    margin-left:10px;
+    margin-top: 20px;
+    text-align: center;
+    margin-bottom: 30px;
+    cursor: pointer;
+}
+.bcp{
+    display: inline-block;
+    margin-top: 15px;
 }

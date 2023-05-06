@@ -13,25 +13,28 @@ var firebaseConfig = {
     var db=firebase.database();
     const auth = firebase.auth();
     
+    var resettime;
     setTimeout(() => {
      document.getElementById("runArea").remove();
      if(!auth.currentUser){
         location.href="./index.html";
      }
         db.ref('users/'+auth.currentUser.uid).on('value', function (obj) {
-            console.log(auth.currentUser);
             if(!obj.val()){
-                console.log("a")
+                console.log("no obj")
                 db.ref('users/'+auth.currentUser.uid).update({
         "name": auth.currentUser.displayName,
-        "status":"stop",
+        "reset":4,
+        "status":{
+        "now":"stop",
         "time": 0,
         "record":new Date()
+        }
        });
             }else{
         udata=obj.val();
-    console.log(udata);
-    var currentTime = udata.time;
+        resettime=udata.reset;
+    var currentTime = udata.status.time;
     const hour = Math.floor(currentTime/3600);
     const min = Math.floor((currentTime-3600*hour)/60);
     const sec = currentTime-3600*hour-min*60;
@@ -43,10 +46,14 @@ var firebaseConfig = {
     });
     }, 1000);
     
-    
             var rotate = localStorage.getItem('rotate');
             var check = document.getElementById('switch1').checked;
             var center = document.getElementById('center');
+            var setting = document.getElementById('back');
+            var resettime;
+            
+
+
             console.log(rotate)
           if(rotate=="true"){
             document.getElementById('switch1').checked=true;
@@ -97,6 +104,7 @@ var firebaseConfig = {
                 document.getElementById('status').innerText='学習中';
                 document.getElementById('tggle').style.display="none";
                 document.getElementById('changebutton').style.display="none";
+                setting.style.display="none";
                 if(!check){	
                     center.setAttribute('onclick','stop()');
                 }
@@ -113,6 +121,7 @@ var firebaseConfig = {
                 document.body.style.backgroundColor="lightgreen";
                 document.getElementById('status').innerText='休憩中';
                 document.getElementById('changebutton').style.display="block";
+                setting.style.display="block";
                 if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
                 document.getElementById('tggle').style.display="block";
       } else {
@@ -134,8 +143,12 @@ var firebaseConfig = {
     
     // スタートボタンがクリックされたら時間を進める
     function saimer(){
-      startTime = Date.now();
-      rtime = Number(udata.time);
+        rtime = Number(udata.status.time);
+        db.ref('users/'+auth.currentUser.uid+'/status').update({
+            "time":rtime,
+            "now":new Date(),
+            "record":new Date()
+        });
       displayTime();
     }
     
@@ -156,33 +169,65 @@ var firebaseConfig = {
     // ストップボタンがクリックされたら時間を止める
     function stimer(){
       clearTimeout(timeoutID);
-      db.ref('users/'+auth.currentUser.uid).update({
-            "name": auth.currentUser.displayName,
-        "status":"stop",
+      db.ref('users/'+auth.currentUser.uid+'/status').update({
+        "now":"stop",
         "time": rtime,
         "record":new Date()
     });
+    var ago = new Date();
+    ago.setHours(ago.getHours() -Number(resettime));
+    var dt = new Date(ago);
+    var y = dt.getFullYear();
+  var m = ('00' + (dt.getMonth()+1)).slice(-2);
+  var d = ('00' + dt.getDate()).slice(-2);
+  var format = y + '-' + m + '-' + d;
+    db.ref('archive/'+format+'/'+auth.currentUser.uid).update({
+        "name":auth.currentUser.displayName,
+        "time":Number(rtime)/60
+    })
+    }
+
+
+    function format(dt){
+        var y = dt.getFullYear();
+      var m = ('00' + (dt.getMonth()+1)).slice(-2);
+      var d = ('00' + dt.getDate()).slice(-2);
+      var format = y + '-' + m + '-' + d;
+      return format
     }
     
-    // リセットボタンがクリックされたら時間を0に戻す
+
     function retimer(){
       time.textContent = '00:00:00';
       stopTime = 0;
-      db.ref('users/'+auth.currentUser.uid).update({
-            "name": auth.currentUser.displayName,
-        "status":"stop",
-        "time": stopTime,
-        "record":new Date()
+      var date = new Date();
+      date.setDate(date.getDate() - 1);
+      var day = format(new Date(date));
+      console.log(day);
+      var weekago = new Date();
+      weekago.setDate(weekago.getDate() - 7);
+      var week = format(new Date(weekago));
+      console.log(week);
+    db.ref('archive/'+day+'/'+auth.currentUser.uid).update({
+        "name":auth.currentUser.displayName,
+        "time":udata.status.time,
     });
+    db.ref('users/'+auth.currentUser.uid+'/status').update({
+      "now":"stop",
+      "time": stopTime,
+      "record":new Date()
+  });
+  db.ref('archive/'+week).remove();
     }
     
     function checkdate(){
-        var recordDate = udata.record;
+        var recordDate = udata.status.record;
         var rec = new Date(recordDate);
     var ago = new Date();
-    ago.setHours(ago.getHours() -4);
-    console.log("ago="+ago);
-    console.log("now="+rec);
+    ago.setHours(ago.getHours() - Number(resettime));
+    rec.setHours(rec.getHours() - Number(resettime));
+    console.log("now time -"+resettime+" hour="+ago);
+    console.log("recorded time -"+resettime+" hour="+rec);
     if(ago.getDate() == rec.getDate()){
         console.log('true');
         return true;

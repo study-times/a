@@ -78,8 +78,126 @@ input[name="tab_item"] {
     display: inline-block;
     margin-top: 15px;
 }
+
+/* === ボタンを表示するエリア ============================== */
+.switchArea {
+line-height    : 20px;                /* 1行の高さ          */
+letter-spacing : 0;                   /* 文字間             */
+text-align     : center;              /* 文字位置は中央     */
+font-size      : 9px;                /* 文字サイズ         */
+
+position       : relative;            /* 親要素が基点       */
+margin         : auto;                /* 中央寄せ           */
+width          : 50px;               /* ボタンの横幅       */
+}
+
+/* === チェックボックス ==================================== */
+.switchArea input[type="checkbox"] {
+display        : none;            /* チェックボックス非表示 */
+}
+
+/* === チェックボックスのラベル（標準） ==================== */
+.switchArea label {
+display        : block;               /* ボックス要素に変更 */
+box-sizing     : border-box;          /* 枠線を含んだサイズ */
+height         : 20px;                /* ボタンの高さ       */
+border         : 2px solid #999999;   /* 未選択タブのの枠線 */
+border-radius  : 10px;                /* 角丸               */
+}
+
+/* === チェックボックスのラベル（ONのとき） ================ */
+.switchArea input[type="checkbox"]:checked +label {
+border-color   : #78bd78;             /* 選択タブの枠線     */
+}
+
+/* === 表示する文字（標準） ================================ */
+.switchArea label span:after{
+content        : "OFF";               /* 表示する文字       */
+padding        : 0 0 0 12px;          /* 表示する位置       */
+color          : #999999;             /* 文字色             */
+}
+
+/* === 表示する文字（ONのとき） ============================ */
+.switchArea  input[type="checkbox"]:checked + label span:after{
+content        : "ON";                /* 表示する文字       */
+padding        : 0 12px 0 0;          /* 表示する位置       */
+color          : #78bd78;             /* 文字色             */
+}
+
+/* === 丸部分のSTYLE（標準） =============================== */
+.switchArea #swImg {
+position       : absolute;            /* 親要素からの相対位置*/
+width          : 16px;                /* 丸の横幅           */
+height         : 16px;                /* 丸の高さ           */
+background     : #999999;             /* カーソルタブの背景 */
+top            : 2px;                 /* 親要素からの位置   */
+left           : 1px;                 /* 親要素からの位置   */
+border-radius  : 8px;                /* 角丸               */
+transition     : .2s;                 /* 滑らか変化         */
+}
+
+/* === 丸部分のSTYLE（ONのとき） =========================== */
+.switchArea input[type="checkbox"]:checked ~ #swImg {
+transform      : translateX(30px);    /* 丸も右へ移動       */
+background     : #78bd78;             /* カーソルタブの背景 */
+}
+
+/* === 実行中バックグランド ================================ */
+.runBg {
+position   : fixed;
+overflow   : hidden;
+top        : 0;
+right      : 0;
+bottom     : 0;
+left       : 0;
+background : rgba(255, 255, 255, 0.90);
+z-index    : 10;
+}
+
+/* === 実行中ウインド ====================================== */
+.runBg .runWindow {
+                           /* 実行中ウインドを中心に表示 */
+position      : absolute;
+top           : 50%;
+left          : 50%;
+transform     : translate(-50%, -50%);
+z-index       : 11;
+         /* ↓実行中ウインドウの見た目：変更してください */
+width         : 300px;
+background    : #fff;
+border        : 3px solid #999;
+border-radius : 10px;
+font-size     : 12pt;
+line-height   : 1.2;
+text-align    : center;
+}
+
+/* === 実行中バーのエリア ================================== */
+.runBg .runWindow .bar {
+width         : 80%;
+margin        : 10px auto;
+overflow      : hidden;
+border        : 1px solid rgba(127, 70, 0, 0.90);
+}
+
+/* === 実行中ウインド：アニメーション ====================== */
+.runBg .runWindow .bar::before {
+display       : block;
+content       : "";
+height        : 20px;
+color         : #fff;
+background    : linear-gradient(90deg, #ffffff, rgba(127, 70, 0, 0.90));
+animation     : runOpenAnime 2s linear infinite;
+}
+@keyframes runOpenAnime {
+0% { transform  :translateX(-100%) }
+100% { transform  :translateX(100%)  }
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.7.0/firebase.js"></script>
 </head>
 <body>
     <div id="back" onclick="location.href='./learning.html'"><div class="bcp">←戻る</div></div>
@@ -87,62 +205,32 @@ input[name="tab_item"] {
         <input id="all" type="radio" name="tab_item" checked>
         <label class="tab_item" for="all">競争</label>
         <input id="programming" type="radio" name="tab_item">
-        <label class="tab_item" for="programming">自分</label>
+        <label class="tab_item" for="programming">自分の学習時間</label>
         <input id="design" type="radio" name="tab_item">
-        <label class="tab_item" for="design">アーカイブ</label>
+        <label class="tab_item" for="design">昨日の順位</label>
         <div class="tab_content" id="all_content">
           <div class="tab_content_description">
-            <p class="c-txtsp">競争の内容が入ります</p>
-            <canvas id="lineChart" height="450" width="800"></canvas>
+            <canvas id="race"></canvas>
           </div>
         </div>
         <div class="tab_content" id="programming_content">
           <div class="tab_content_description">
-            <p class="c-txtsp">自分の内容が入ります</p>
+            <canvas id="own"></canvas>
           </div>
         </div>
         <div class="tab_content" id="design_content">
           <div class="tab_content_description">
-            <p class="c-txtsp">アーカイブが入ります</p>
+            <canvas id="yesterday"></canvas>
           </div>
         </div>
       </div>
-      <script>
-        let lineCtx = document.getElementById("lineChart");
-            // 線グラフの設定
-            let lineConfig = {
-              type: 'line',
-              data: {
-                // ※labelとデータの関係は得にありません
-                labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-                datasets: [{
-                  label: 'Red',
-                  data: [20, 35, 40, 30, 45, 35, 40],
-                  borderColor: '#f88',
-                }, {
-                  label: 'Green',
-                  data: [20, 15, 30, 25, 30, 40, 35],
-                  borderColor: '#484',
-                }, {
-                  label: 'Blue',
-                  data: [30, 25, 10, 5, 25, 30, 20],
-                  borderColor: '#48f',
-                }],
-              },
-              options: {
-                scales: {
-                  // Y軸の最大値・最小値、目盛りの範囲などを設定する
-                  y: {
-                    suggestedMin: 0,
-                    suggestedMax: 60,
-                    ticks: {
-                      stepSize: 20,
-                    }
-                  }
-                },
-              },
-            };
-            let lineChart = new Chart(lineCtx, lineConfig);
-    </script>
+      <!-- 実行中ウインドウのエリア -->
+<div id="runArea" class="runBg">
+    <div class="runWindow"> <!-- ここがウインドウとなります -->
+      <p>読み込み中</p>
+      <div class="bar"></div>
+    </div>
+  </div>
+    <script src="./comparison.js"></script>
 </body>
 </html>
