@@ -53,9 +53,9 @@ var firebaseConfig = {
                 yestimes=[];
                 yesdata=[];
                 yesbgcolors =[];
-            race(data);
-            own(data);
-            yes(data);
+            var racef = race(data);
+            var ownf = own(data);
+            var yesf = yes(data);
             })
         }, 1000);
     
@@ -74,6 +74,9 @@ var firebaseConfig = {
             ago.setHours(ago.getHours() -Number(resettime));
             var today = format(new Date(ago));
             var todaydata = data[today];
+            if(!todaydata){
+                document.getElementById('norace').innerHTML="データがありません";
+            }else{
             var keys =Object.keys(todaydata);
             for(i=0;i<keys.length;i++){
                 var array=[];
@@ -96,6 +99,7 @@ var firebaseConfig = {
                 }
             }
             racechart(racelabel,racetimes,racebgcolors);
+            }
             }
     
     
