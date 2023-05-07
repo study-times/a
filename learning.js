@@ -200,9 +200,8 @@ var firebaseConfig = {
     function retimer(){
       time.textContent = '00:00:00';
       stopTime = 0;
-      var date = new Date();
-      date.setDate(date.getDate() - 1);
-      var day = format(new Date(date));
+      var date = new Date(udata.status.record);
+      var day = format(date);
       console.log(day);
       var weekago = new Date();
       weekago.setDate(weekago.getDate() - 7);
@@ -228,7 +227,7 @@ var firebaseConfig = {
     rec.setHours(rec.getHours() - Number(resettime));
     console.log("now time -"+resettime+" hour="+ago);
     console.log("recorded time -"+resettime+" hour="+rec);
-    if(ago.getDate() == rec.getDate()){
+    if(new Date(ago).getDate() == new Date(rec).getDate()){
         console.log('true');
         return true;
     }else{
