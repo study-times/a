@@ -7,10 +7,10 @@
     <title>Gakkan-var.2</title>
 <link rel="icon" href="./gakkanicon.png" />
 <style>
+  body{
+    user-select: none;
+  }
     /*タブ切り替え全体のスタイル*/
-    body{
-      user-select: none;
-    }
 .tabs {
   margin-top: 50px;
   padding-bottom: 40px;
@@ -213,7 +213,6 @@ animation     : runOpenAnime 2s linear infinite;
         <label class="tab_item" for="design">昨日の順位</label>
         <div class="tab_content" id="all_content">
           <div class="tab_content_description">
-            <p id="norace"></p>
             <canvas id="race"></canvas>
           </div>
         </div>
