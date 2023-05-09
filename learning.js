@@ -78,7 +78,7 @@ var firebaseConfig = {
                 center.style.cursor="pointer";
             }
     
-            if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
+            if (navigator.userAgent.match(/iPhone|Android.+Mobile/)&&rotate=="true") {
                 window.addEventListener("orientationchange", function() {
         var orientation = window.orientation;
         if (orientation === 0) {
