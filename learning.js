@@ -67,18 +67,9 @@ var firebaseConfig = {
 
 
             console.log(rotate)
-          if(rotate=="true"){
-            document.getElementById('switch1').checked=true;
-                center.style.cursor="not-allowed";
-            }else if(!rotate){
-                document.getElementById('switch1').checked=true;
-                center.style.cursor="not-allowed";
-            }else if(rotate=="false"){
-                center.setAttribute('onclick','start()');
-                center.style.cursor="pointer";
-            }
-    
-            if (navigator.userAgent.match(/iPhone|Android.+Mobile/)&&rotate=="true") {
+
+            if (navigator.userAgent.match(/iPhone|Android.+Mobile/)) {
+                if(rotate=="true"){
                 window.addEventListener("orientationchange", function() {
         var orientation = window.orientation;
         if (orientation === 0) {
@@ -87,6 +78,7 @@ var firebaseConfig = {
             start();
       }
     });
+}
       } else {
         center.setAttribute('onclick','start()');
         center.style.cursor="pointer";
